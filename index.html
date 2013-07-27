@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta encoding="utf8" />
+    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no, width=device-width"/>
+
+    <script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
+    
+    <!-- link href="http://fonts.googleapis.com/css?family=Droid+Sans:400,700" rel="stylesheet" /-->
+    
+    <style>
+        body, img, button {
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body{
+            height: 100%;
+            width: 100%;
+            position: relative;
+        }        
+                
+        img {
+            left: 35%;
+            position: absolute;
+            max-width: 25%;
+            width: 25%;
+            top: 5%;
+        }
+        
+        button {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            height: 5em;
+            width: 5em;
+            border-radius: 2.5em;
+            margin: -2.5em;
+        }
+        
+        .invisible {
+            -webkit-transition: opacity 0.35s ease-in-out;
+               -moz-transition: opacity 0.35s ease-in-out;
+                -ms-transition: opacity 0.35s ease-in-out;
+                 -o-transition: opacity 0.35s ease-in-out;
+                    transition: opacity 0.35s ease-in-out;
+
+            opacity: 0;
+            z-index: 0;
+        }
+
+        .visible {
+            opacity: 1;
+            z-index: 1;
+        }
+    </style>
+</head>
+<body>
+
+    <button data-color="rgb(255,25,255)" data-sound="car-horn" data-image="car"></button>
+    <button data-color="rgb(255,255,25)" data-sound="bicycle-bell" data-image="bicycle"></button>
+        
+    <script>
+        window.oSounds = {};
+
+        function loadSound(p_sSound){
+            var oSound = new Audio('sounds/' + p_sSound + '.mp3');
+            oSound.load();
+            window.oSounds[p_sSound] = oSound;            
+        }
+
+        function playSound(p_sSound){
+            if(typeof window.oSounds[p_sSound] === 'undefined'){
+                loadSound(p_sSound);
+            }
+            
+            window.oSounds[p_sSound].play();        
+        }
+
+        var iDelayMilliseconds=3000;
+
+        function displayNext(p_iCurrentButtonId){
+            window.setTimeout(function(){
+                var $NextButton = $('.button-' + (p_iCurrentButtonId+1));
+                hide($('.image-' + p_iCurrentButtonId));
+                if($NextButton.length > 0){
+                    show($NextButton);
+                } else {
+                    // End of cycle
+                    show($('.button-0'));
+                }
+            }, iDelayMilliseconds);
+        }
+
+        function hide(p_$Subject){
+            p_$Subject.removeClass('visible');
+            p_$Subject.addClass('invisible');
+        }
+        
+        function show(p_$Subject){
+            p_$Subject.removeClass('invisible');
+            p_$Subject.addClass('visible');
+        }
+        
+        $('button').each(function(p_iIndex, p_oButton){
+            var   $Button
+                , $Img
+                , sClassName
+                , sSound
+                , iTimeoutID
+            ;
+                        
+            $Button = $(p_oButton);
+            
+            if(p_iIndex === 0){
+                sClassName = 'visible';
+            } else {
+                sClassName = 'invisible';
+            }
+
+            sClassName += ' button-' + p_iIndex;
+            $Button.addClass(sClassName);
+            
+            $Img = $('<img class="invisible image-' + p_iIndex + '" src="images/' + $Button.data('image') + '.png" />');
+            $Button.parent().prepend($Img);
+            
+            $Button.css('background-color', $Button.data('color'));
+            
+            sSound = $Button.data('sound');
+            loadSound(sSound);
+            
+            $Button.on('click', function(){
+                playSound(sSound);
+                
+                if(typeof iTimeoutID !== 'undefined'){
+                    window.clearTimeout(iTimeoutID);
+                }
+                
+                iTimeoutID = window.setTimeout(function($Img, p_sParam2){
+                        show($Img);
+                        hide($Button);
+                        playSound(sSound);
+                        
+                        displayNext(parseInt(p_iIndex, 10));
+                    }
+                    , iDelayMilliseconds, $Img, $Button
+                );
+            });     
+        });        
+    </script>
+</body>
+</html>
