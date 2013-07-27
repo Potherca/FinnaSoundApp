@@ -56,11 +56,18 @@
     </style>
 </head>
 <body>
-
-    <button data-color="rgb(255,25,255)" data-sound="car-horn" data-image="car"></button>
-    <button data-color="rgb(255,255,25)" data-sound="bicycle-bell" data-image="bicycle"></button>
-        
-    <script>
+    <script>    
+        var aItems = [{
+              color: [255,25,255]
+            , sound: "car-horn"
+            , image: "car"
+        }
+        , {
+              color: [255,255,25]
+            , sound: "bicycle-bell"
+            , image: "bicycle"
+        }];
+    
         window.oSounds = {};
 
         function loadSound(p_sSound){
@@ -101,16 +108,17 @@
             p_$Subject.removeClass('invisible');
             p_$Subject.addClass('visible');
         }
-        
-        $('button').each(function(p_iIndex, p_oButton){
-            var   $Button
+      
+      $.each(aItems, function(p_iIndex, p_oButton){
+            var  $Button
                 , $Img
                 , sClassName
                 , sSound
                 , iTimeoutID
             ;
                         
-            $Button = $(p_oButton);
+            $Button = $('<button></button>');
+            $('body').append($Button);
             
             if(p_iIndex === 0){
                 sClassName = 'visible';
@@ -121,12 +129,12 @@
             sClassName += ' button-' + p_iIndex;
             $Button.addClass(sClassName);
             
-            $Img = $('<img class="invisible image-' + p_iIndex + '" src="images/' + $Button.data('image') + '.png" />');
+            $Img = $('<img class="invisible image-' + p_iIndex + '" src="images/' + p_oButton.image + '.png" />');
             $Button.parent().prepend($Img);
             
-            $Button.css('background-color', $Button.data('color'));
+            $Button.css('background-color', 'rgb(' + p_oButton.color.join(',') + ')');
             
-            sSound = $Button.data('sound');
+            sSound = p_oButton.sound;
             loadSound(sSound);
             
             $Button.on('click', function(){
