@@ -58,9 +58,8 @@
 <body>
     <script>    
         window.oSounds = {};
-        var   iDelayMilliseconds=3000
-            , iItemCount
-        ;
+        
+        var iItemCount;
         
         function makeColor(p_iCounter, p_iLength){
             var   iCenter = 128
@@ -97,27 +96,51 @@
         }
 
         function playSound(p_sSound){
-            if(typeof window.oSounds[p_sSound] === 'undefined'){
-                loadSound(p_sSound);
+            function play(){
+                window.oSounds[p_sSound].pause();
+                try {
+                    window.oSounds[p_sSound].currentTime = 0;        
+                } catch(oError){
+                    // don't care
+                    console.log(oError);
+                }
+                window.oSounds[p_sSound].play();        
             }
             
-            window.oSounds[p_sSound].play();        
+            if(typeof window.oSounds[p_sSound] === 'undefined'){
+                loadSound(p_sSound);
+                play();
+            } else {
+                play();
+            }
+                            
+            return window.oSounds[p_sSound];
+
         }
 
 
-        function displayNext(p_iCurrentButtonId){
+        function displayNext(p_iCurrentButtonId, p_iDelay){
             window.setTimeout(function(){
                 var $NextButton = $('.button-' + (p_iCurrentButtonId+1));
                 hide($('.image-' + p_iCurrentButtonId));
                 if($NextButton.length > 0){
                     show($NextButton);
+                    enable($NextButton);
                 } else {
                     // End of cycle
                     show($('.button-0'));
                 }
-            }, iDelayMilliseconds);
+            }, p_iDelay);
         }
 
+        function disable(p_$Subject){
+            p_$Subject.attr('disabled','disabled');
+        }
+        
+        function enable(p_$Subject){
+            p_$Subject.removeAttr('disabled');
+        }
+      
         function hide(p_$Subject){
             p_$Subject.removeClass('visible');
             p_$Subject.addClass('invisible');
@@ -131,52 +154,52 @@
         function loadItems(p_iIndex, p_oButton){
             var  $Button
                 , $Img
-                , sClassName
                 , sSound
                 , iTimeoutID
             ;
                         
             $Button = $('<button></button>');
+            $Button.addClass('button-' + p_iIndex);
+            $Button.css('background-color', makeColor(p_iIndex, iItemCount));
             $('body').append($Button);
             
+            // Hide everything but the first button
             if(p_iIndex === 0){
-                sClassName = 'visible';
+                show($Button);
             } else {
-                sClassName = 'invisible';
+                hide($Button);
+                disable($Button);
             }
-
-            sClassName += ' button-' + p_iIndex;
-            $Button.addClass(sClassName);
             
             $Img = $('<img class="invisible image-' + p_iIndex + '" src="images/' + p_oButton.image + '" />');
             $Button.parent().prepend($Img);
-
-            $Button.css('background-color', makeColor(p_iIndex, iItemCount));
             
             sSound = p_oButton.sound;
             loadSound(sSound);
             
             $Button.on('click', function(){
-                playSound(sSound);
-                
+                var   oSound = playSound(sSound)
+                    , iDuration = Math.ceil(oSound.duration * 1000) 
+                ;
+
                 if(typeof iTimeoutID !== 'undefined'){
                     window.clearTimeout(iTimeoutID);
                 }
                 
                 iTimeoutID = window.setTimeout(function($Img, p_sParam2){
-                        show($Img);
+                        show($Img);                        
+                        disable($Button);
                         hide($Button);
                         playSound(sSound);
                         
-                        displayNext(parseInt(p_iIndex, 10));
+                        displayNext(parseInt(p_iIndex, 10), iDuration);
                     }
-                    , iDelayMilliseconds, $Img, $Button
+                    , iDuration, $Img, $Button
                 );
             });     
         };
         
         $.getJSON('list.json').done(function(p_oData){
-            console.log(p_oData);
             iItemCount = p_oData.length;
             $.each(p_oData, loadItems);
         });    
