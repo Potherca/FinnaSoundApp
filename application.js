@@ -39,6 +39,7 @@ function loadSound(p_sSound){
 function playSound(p_sSound){
     function play(){
         window.oSounds[p_sSound].pause();
+        console.log(window.oSounds[p_sSound].currentTime);
         try {
             window.oSounds[p_sSound].currentTime = 0;
         } catch(oError){
@@ -123,7 +124,11 @@ function loadItems(p_iIndex, p_oButton){
 
 
         oSound = playSound(sSound);
+        console.log('--------------------------------------------------------');
+        console.log('oSound.duration');
+        console.log(oSound.duration);
         console.log(oSound.duration === NaN);
+        console.log('--------------------------------------------------------');
         if(oSound.duration === NaN){
             $(oSound).on('loadedmetadata', function() {
                 iDuration = Math.ceil(oSound.duration * 1000);
@@ -144,8 +149,10 @@ function loadItems(p_iIndex, p_oButton){
                 hide($Button);
                 playSound(sSound);
                 
+                console.log('--------------------------------------------------------');
                 console.log('setTimeout');
                 console.log(iDuration);
+                console.log('--------------------------------------------------------');
                 
                 displayNext(parseInt(p_iIndex, 10), iDuration);
             }
