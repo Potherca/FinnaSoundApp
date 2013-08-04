@@ -127,9 +127,9 @@ function loadItems(p_iIndex, p_oButton){
         console.log('--------------------------------------------------------');
         console.log('oSound.duration');
         console.log(oSound.duration);
-        console.log(oSound.duration === NaN);
+        console.log(isNaN(oSound.duration));
         console.log('--------------------------------------------------------');
-        if(oSound.duration === NaN){
+        if(isNaN(oSound.duration)){
             $(oSound).on('loadedmetadata', function() {
                 iDuration = Math.ceil(oSound.duration * 1000);
                 console.log('loadedmetadata');
