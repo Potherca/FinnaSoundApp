@@ -23,8 +23,34 @@ button {
     left: 50%;
     height: 15em;
     width: 15em;
-    border-radius: 7.5em;
+    border-radius: 50%;
     margin: -7.5em;
+
+    background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(247,247,247,0.4)), to(rgba(231,231,231,0.4)));
+    background-image: -webkit-linear-gradient(top, rgba(247,247,247,0.4), rgba(231,231,231,0.4)); 
+    background-image: -moz-linear-gradient(top, rgba(247,247,247,0.4), rgba(231,231,231,0.4)); 
+    background-image: -ms-linear-gradient(top, rgba(247,247,247,0.4), rgba(231,231,231,0.4)); 
+    background-image: -o-linear-gradient(top, rgba(247,247,247,0.4), rgba(231,231,231,0.4)); 
+
+    border-width: 0.25em;
+    
+    
+    box-shadow: 0em 0.3em 2em rgb(170,170,170), inset 0em 0.2em 2em rgb(255,255,255);
+}
+
+_button:before {
+  content: "";
+  display: block;
+  background: #fff;
+  border-top: 2px solid #ddd;
+  position: absolute;
+  top: -18px;
+  left: -18px;
+  bottom: -18px;
+  right: -18px;
+  z-index: -1;
+  border-radius: 50%;
+  box-shadow: inset 0px 8px 48px #ddd;
 }
 
 .invisible {
