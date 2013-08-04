@@ -127,6 +127,7 @@ function loadItems(p_iIndex, p_oButton){
         if(oSound.duration === NaN){
             $(oSound).on('loadedmetadata', function() {
                 iDuration = Math.ceil(oSound.duration * 1000);
+                console.log('loadedmetadata');
                 console.log(iDuration);
             });
         } else {
@@ -143,7 +144,8 @@ function loadItems(p_iIndex, p_oButton){
                 hide($Button);
                 playSound(sSound);
                 
-                console.log(iDuration,'iDuration');
+                console.log('setTimeout');
+                console.log(iDuration);
                 
                 displayNext(parseInt(p_iIndex, 10), iDuration);
             }
