@@ -123,11 +123,11 @@ function loadItems(p_iIndex, p_oButton){
 
 
         oSound = playSound(sSound);
-        console.log(typeof oSound.duration);
-        console.log(oSound.duration);
-        if(typeof oSound.duration === 'NaN'){
+        console.log(oSound.duration === NaN);
+        if(oSound.duration === NaN){
             $(oSound).on('loadedmetadata', function() {
                 iDuration = Math.ceil(oSound.duration * 1000);
+                console.log(iDuration);
             });
         } else {
             iDuration = Math.ceil(oSound.duration * 1000);
@@ -142,7 +142,9 @@ function loadItems(p_iIndex, p_oButton){
                 disable($Button);
                 hide($Button);
                 playSound(sSound);
-
+                
+                console.log(iDuration,'iDuration');
+                
                 displayNext(parseInt(p_iIndex, 10), iDuration);
             }
             , iDuration, $Img, $Button
