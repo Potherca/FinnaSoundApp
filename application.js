@@ -1,6 +1,8 @@
 window.oSounds = {};
 
-var iItemCount;
+var   iItemCount
+    , iTimeoutID
+;
 
 function makeColor(p_iCounter, p_iLength){
     var   iCenter = 128
@@ -39,12 +41,11 @@ function loadSound(p_sSound){
 function playSound(p_sSound){
     function play(){
         window.oSounds[p_sSound].pause();
-        console.log(window.oSounds[p_sSound].currentTime);
         try {
             window.oSounds[p_sSound].currentTime = 0;
         } catch(oError){
             // don't care
-            console.log(oError);
+            //console.log(oError);
         }
         window.oSounds[p_sSound].play();
     }
@@ -97,7 +98,6 @@ function loadItems(p_iIndex, p_oButton){
     var  $Button
         , $Img
         , sSound
-        , iTimeoutID
     ;
 
     $Button = $('<button></button>');
@@ -122,42 +122,35 @@ function loadItems(p_iIndex, p_oButton){
     $Button.on('click', function(){
         var   oSound, iDuration;
 
+        function clickTimeOutHandler(){
+            show($Img);
+            disable($Button);
+            hide($Button);
+            playSound(sSound);
+            
+            displayNext(parseInt(p_iIndex, 10), iDuration);
+        }
+        
+        function setTimer(){
+            if(typeof iTimeoutID !== 'undefined'){
+                window.clearTimeout(iTimeoutID);
+            }
 
+            iTimeoutID = window.setTimeout(clickTimeOutHandler
+                , iDuration
+            );
+        }
+        
         oSound = playSound(sSound);
-        console.log('--------------------------------------------------------');
-        console.log('oSound.duration');
-        console.log(oSound.duration);
-        console.log(isNaN(oSound.duration));
-        console.log('--------------------------------------------------------');
         if(isNaN(oSound.duration)){
             $(oSound).on('loadedmetadata', function() {
                 iDuration = Math.ceil(oSound.duration * 1000);
-                console.log('loadedmetadata');
-                console.log(iDuration);
+                setTimer();
             });
         } else {
             iDuration = Math.ceil(oSound.duration * 1000);
+            setTimer();
         }
-
-        if(typeof iTimeoutID !== 'undefined'){
-            window.clearTimeout(iTimeoutID);
-        }
-
-        iTimeoutID = window.setTimeout(function($Img, p_sParam2){
-                show($Img);
-                disable($Button);
-                hide($Button);
-                playSound(sSound);
-                
-                console.log('--------------------------------------------------------');
-                console.log('setTimeout');
-                console.log(iDuration);
-                console.log('--------------------------------------------------------');
-                
-                displayNext(parseInt(p_iIndex, 10), iDuration);
-            }
-            , iDuration, $Img, $Button
-        );
     });
 };
 
