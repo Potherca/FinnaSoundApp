@@ -33,9 +33,11 @@ function makeColor(p_iCounter, p_iLength){
 };
 
 function loadSound(p_sSound){
-    var oSound = new Audio('sounds/' + p_sSound + '.mp3');
-    oSound.load();
-    window.oSounds[p_sSound] = oSound;
+    if(p_sSound !== ''){
+        var oSound = new Audio('sounds/' + p_sSound + '.mp3');
+        oSound.load();
+        window.oSounds[p_sSound] = oSound;
+    }
 }
 
 function playSound(p_sSound){
@@ -50,7 +52,9 @@ function playSound(p_sSound){
         window.oSounds[p_sSound].play();
     }
 
-    if(typeof window.oSounds[p_sSound] === 'undefined'){
+    if(p_sSound === ''){
+        // Nothing to do
+    } else if(typeof window.oSounds[p_sSound] === 'undefined'){
         loadSound(p_sSound);
         play();
     } else {
@@ -120,36 +124,38 @@ function loadItems(p_iIndex, p_oButton){
     loadSound(sSound);
 
     $Button.on('click', function(){
-        var   oSound, iDuration;
+        var   oSound;
 
-        function clickTimeOutHandler(){
+        function clickTimeOutHandler(p_iDuration){
             show($Img);
             disable($Button);
             hide($Button);
             playSound(sSound);
-            
-            displayNext(parseInt(p_iIndex, 10), iDuration);
+            displayNext(parseInt(p_iIndex, 10), p_iDuration);
         }
         
-        function setTimer(){
+        function setTimer(p_iDuration){
             if(typeof iTimeoutID !== 'undefined'){
                 window.clearTimeout(iTimeoutID);
             }
 
             iTimeoutID = window.setTimeout(clickTimeOutHandler
-                , iDuration
+                , p_iDuration
+                , p_iDuration
             );
         }
         
         oSound = playSound(sSound);
-        if(isNaN(oSound.duration)){
+        if(sSound === ''){
+            setTimer(650);
+        }else if(isNaN(oSound.duration)){
             $(oSound).on('loadedmetadata', function() {
-                iDuration = Math.ceil(oSound.duration * 1000);
-                setTimer();
+                var iDuration = Math.ceil(oSound.duration * 1000);
+                setTimer(iDuration);
             });
         } else {
-            iDuration = Math.ceil(oSound.duration * 1000);
-            setTimer();
+            var iDuration = Math.ceil(oSound.duration * 1000);
+            setTimer(iDuration);
         }
     });
 };
